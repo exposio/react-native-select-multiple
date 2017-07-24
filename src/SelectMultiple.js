@@ -149,7 +149,8 @@ export default class SelectMultiple extends Component {
       <TouchableWithoutFeedback onPress={() => this.onRowPress(row)}>
         <View style={rowStyle}>
           <Image style={checkboxStyle} source={checkboxSource} />
-          <Text style={labelStyle}>{row.label}</Text>
+          {/* <Text style={labelStyle}>{row.label}</Text> */}
+          <Image style={labelStyle} source={row.label} />
         </View>
       </TouchableWithoutFeedback>
     )
