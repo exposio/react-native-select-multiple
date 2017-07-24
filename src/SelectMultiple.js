@@ -1,21 +1,17 @@
-import React, { Component, PropTypes } from 'react'
-import { View, ListView, Text, TouchableWithoutFeedback, Image } from 'react-native'
-import styles from './SelectMultiple.styles'
-import checkbox from '../images/icon-checkbox.png'
-import checkboxChecked from '../images/icon-checkbox-checked.png'
+import React, { Component, PropTypes } from "react";
+import { View, ListView, Text, TouchableWithoutFeedback, Image } from "react-native";
+import styles from "./SelectMultiple.styles";
+import checkbox from "../images/icon-checkbox.png";
+import checkboxChecked from "../images/icon-checkbox-checked.png";
 
 const itemType = PropTypes.oneOfType([
   PropTypes.string,
   PropTypes.shape({ label: PropTypes.string, value: PropTypes.any })
-])
+]);
 
-const styleType = PropTypes.oneOfType([
-  PropTypes.object,
-  PropTypes.number,
-  PropTypes.array
-])
+const styleType = PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]);
 
-const sourceType = PropTypes.oneOfType([PropTypes.object, PropTypes.number])
+const sourceType = PropTypes.oneOfType([PropTypes.object, PropTypes.number]);
 
 // A customiseable ListView that allows you to select multiple rows
 export default class SelectMultiple extends Component {
@@ -36,7 +32,7 @@ export default class SelectMultiple extends Component {
     selectedRowStyle: styleType,
     selectedCheckboxStyle: styleType,
     selectedLabelStyle: styleType
-  }
+  };
 
   static defaultProps = {
     selectedItems: [],
@@ -47,102 +43,97 @@ export default class SelectMultiple extends Component {
     labelStyle: {},
     checkboxSource: checkbox,
     selectedCheckboxSource: checkboxChecked
-  }
+  };
 
-  constructor (props) {
-    super(props)
+  constructor(props) {
+    super(props);
 
-    const rows = this.getRowData(props)
+    const rows = this.getRowData(props);
 
     const dataSource = new ListView.DataSource({
       rowHasChanged: (r1, r2) => r1.value !== r2.value || r1.selected !== r2.selected
-    }).cloneWithRows(rows)
+    }).cloneWithRows(rows);
 
-    this.state = { dataSource }
+    this.state = { dataSource };
   }
 
-  componentWillReceiveProps (nextProps) {
-    const rows = this.getRowData(nextProps)
-    const dataSource = this.state.dataSource.cloneWithRows(rows)
-    this.setState({ dataSource })
+  componentWillReceiveProps(nextProps) {
+    const rows = this.getRowData(nextProps);
+    const dataSource = this.state.dataSource.cloneWithRows(rows);
+    this.setState({ dataSource });
   }
 
-  getRowData ({ items, selectedItems }) {
-    items = items.map(this.toLabelValueObject)
-    selectedItems = (selectedItems || []).map(this.toLabelValueObject)
+  getRowData({ items, selectedItems }) {
+    items = items.map(this.toLabelValueObject);
+    selectedItems = (selectedItems || []).map(this.toLabelValueObject);
 
-    items.forEach((item) => {
-      item.selected = selectedItems.some((i) => i.value === item.value)
-    })
+    items.forEach(item => {
+      item.selected = selectedItems.some(i => i.value === item.value);
+    });
 
-    return items
+    return items;
   }
 
-  onRowPress (row) {
-    row = Object.assign({}, row)
+  onRowPress(row) {
+    row = Object.assign({}, row);
 
-    let { selectedItems } = this.props
+    let { selectedItems } = this.props;
 
-    selectedItems = (selectedItems || []).map(this.toLabelValueObject)
+    selectedItems = (selectedItems || []).map(this.toLabelValueObject);
 
-    const index = selectedItems.findIndex((selectedItem) => selectedItem.value === row.value)
+    const index = selectedItems.findIndex(selectedItem => selectedItem.value === row.value);
 
     if (index > -1) {
-      selectedItems = selectedItems.filter((selectedItem) => selectedItem.value !== row.value)
+      selectedItems = selectedItems.filter(selectedItem => selectedItem.value !== row.value);
     } else {
-      selectedItems = selectedItems.concat(row)
+      selectedItems = selectedItems.concat(row);
     }
 
-    this.props.onSelectionsChange(selectedItems, row)
+    this.props.onSelectionsChange(selectedItems, row);
   }
 
-  toLabelValueObject (obj) {
-    if (Object.prototype.toString.call(obj) === '[object String]') {
-      return { label: obj, value: obj }
+  toLabelValueObject(obj) {
+    if (Object.prototype.toString.call(obj) === "[object String]") {
+      return { label: obj, value: obj };
     } else {
-      return { label: obj.label, value: obj.value }
+      return { label: obj.label, value: obj.value };
     }
   }
 
-  mergeStyles (styles1, styles2) {
-    styles1 = styles1 == null ? [] : styles1
-    styles1 = Array.isArray(styles1) ? styles1 : [styles1]
-    return styles2 == null ? styles1 : styles1.concat(styles2)
+  mergeStyles(styles1, styles2) {
+    styles1 = styles1 == null ? [] : styles1;
+    styles1 = Array.isArray(styles1) ? styles1 : [styles1];
+    return styles2 == null ? styles1 : styles1.concat(styles2);
   }
 
-  render () {
-    const { dataSource } = this.state
-    const { style } = this.props
-    const { renderItemRow } = this
-    return <ListView style={style} dataSource={dataSource} renderRow={renderItemRow} />
+  render() {
+    const { dataSource } = this.state;
+    const { style } = this.props;
+    const { renderItemRow } = this;
+    return <ListView style={style} dataSource={dataSource} renderRow={renderItemRow} />;
   }
 
-  renderItemRow = (row) => {
-    let {
-      checkboxSource,
-      rowStyle,
-      labelStyle,
-      checkboxStyle
-    } = this.props
+  renderItemRow = row => {
+    let { checkboxSource, rowStyle, labelStyle, checkboxStyle } = this.props;
 
     const {
       selectedCheckboxSource,
       selectedRowStyle,
       selectedCheckboxStyle,
       selectedLabelStyle
-    } = this.props
+    } = this.props;
 
-    const { mergeStyles } = this
+    const { mergeStyles } = this;
 
     if (row.selected) {
-      checkboxSource = selectedCheckboxSource
-      rowStyle = mergeStyles(styles.row, rowStyle, selectedRowStyle)
-      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle, selectedCheckboxStyle)
-      labelStyle = mergeStyles(styles.label, labelStyle, selectedLabelStyle)
+      checkboxSource = selectedCheckboxSource;
+      rowStyle = mergeStyles(styles.row, rowStyle, selectedRowStyle);
+      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle, selectedCheckboxStyle);
+      labelStyle = mergeStyles(styles.label, labelStyle, selectedLabelStyle);
     } else {
-      rowStyle = mergeStyles(styles.row, rowStyle)
-      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle)
-      labelStyle = mergeStyles(styles.label, labelStyle)
+      rowStyle = mergeStyles(styles.row, rowStyle);
+      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle);
+      labelStyle = mergeStyles(styles.label, labelStyle);
     }
 
     return (
@@ -153,6 +144,6 @@ export default class SelectMultiple extends Component {
           <Image style={labelStyle} source={row.label} />
         </View>
       </TouchableWithoutFeedback>
-    )
-  }
+    );
+  };
 }
