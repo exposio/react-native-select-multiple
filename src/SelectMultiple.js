@@ -1,12 +1,14 @@
 import React, { Component, PropTypes } from "react";
-import { View, ListView, Text, TouchableWithoutFeedback, Image } from "react-native";
+import { View, ListView, Text, TouchableWithoutFeedback, Image, Dimensions } from "react-native";
 import styles from "./SelectMultiple.styles";
 import checkbox from "../images/icon-checkbox.png";
 import checkboxChecked from "../images/icon-checkbox-checked.png";
 
+const { width } = Dimensions.get("window");
+
 const itemType = PropTypes.oneOfType([
   PropTypes.string,
-  PropTypes.shape({ label: PropTypes.string, value: PropTypes.any })
+  PropTypes.shape({ image: PropTypes.string, value: PropTypes.any })
 ]);
 
 const styleType = PropTypes.oneOfType([PropTypes.object, PropTypes.number, PropTypes.array]);
@@ -20,6 +22,9 @@ export default class SelectMultiple extends Component {
     selectedItems: PropTypes.arrayOf(itemType),
 
     onSelectionsChange: PropTypes.func.isRequired,
+    onLongPress: PropTypes.func.isRequired,
+
+    horizontal: PropTypes.bool,
 
     checkboxSource: sourceType,
     selectedCheckboxSource: sourceType,
@@ -27,11 +32,11 @@ export default class SelectMultiple extends Component {
     style: styleType,
     rowStyle: styleType,
     checkboxStyle: styleType,
-    labelStyle: styleType,
+    imageStyle: styleType,
 
     selectedRowStyle: styleType,
     selectedCheckboxStyle: styleType,
-    selectedLabelStyle: styleType
+    selectedImageStyle: styleType
   };
 
   static defaultProps = {
@@ -40,7 +45,8 @@ export default class SelectMultiple extends Component {
     rowStyle: {},
     checkboxStyle: {},
     checkboxCheckedStyle: {},
-    labelStyle: {},
+    imageStyle: {},
+    horizontal: false,
     checkboxSource: checkbox,
     selectedCheckboxSource: checkboxChecked
   };
@@ -64,8 +70,8 @@ export default class SelectMultiple extends Component {
   }
 
   getRowData({ items, selectedItems }) {
-    items = items.map(this.toLabelValueObject);
-    selectedItems = (selectedItems || []).map(this.toLabelValueObject);
+    items = items.map(this.toImageValueObject);
+    selectedItems = (selectedItems || []).map(this.toImageValueObject);
 
     items.forEach(item => {
       item.selected = selectedItems.some(i => i.value === item.value);
@@ -79,7 +85,7 @@ export default class SelectMultiple extends Component {
 
     let { selectedItems } = this.props;
 
-    selectedItems = (selectedItems || []).map(this.toLabelValueObject);
+    selectedItems = (selectedItems || []).map(this.toImageValueObject);
 
     const index = selectedItems.findIndex(selectedItem => selectedItem.value === row.value);
 
@@ -92,56 +98,67 @@ export default class SelectMultiple extends Component {
     this.props.onSelectionsChange(selectedItems, row);
   }
 
-  toLabelValueObject(obj) {
-    if (Object.prototype.toString.call(obj) === "[object String]") {
-      return { label: obj, value: obj };
-    } else {
-      return { label: obj.label, value: obj.value };
-    }
+  onRowLongPress(row) {
+    this.props.onLongPress(row.image);
   }
 
-  mergeStyles(styles1, styles2) {
-    styles1 = styles1 == null ? [] : styles1;
-    styles1 = Array.isArray(styles1) ? styles1 : [styles1];
-    return styles2 == null ? styles1 : styles1.concat(styles2);
+  toImageValueObject(obj) {
+    if (
+      Object.prototype.toString.call(obj) === "[object String]" ||
+      Object.prototype.toString.call(obj) === "[object Number]"
+    ) {
+      return { image: obj, value: obj };
+    } else {
+      return { image: obj.image, value: obj.value };
+    }
   }
 
   render() {
     const { dataSource } = this.state;
-    const { style } = this.props;
     const { renderItemRow } = this;
-    return <ListView style={style} dataSource={dataSource} renderRow={renderItemRow} />;
+    return (
+      <ListView
+        style={this.props.styles}
+        contentContainerStyle={styles.container}
+        dataSource={dataSource}
+        renderRow={renderItemRow}
+        horizontal={this.props.horizontal}
+        initialListSize={15}
+        enableEmptySections={true}
+      />
+    );
   }
 
   renderItemRow = row => {
-    let { checkboxSource, rowStyle, labelStyle, checkboxStyle } = this.props;
+    let { checkboxSource, rowStyle, imageStyle, checkboxStyle } = this.props;
 
     const {
       selectedCheckboxSource,
       selectedRowStyle,
       selectedCheckboxStyle,
-      selectedLabelStyle
+      selectedImageStyle
     } = this.props;
-
-    const { mergeStyles } = this;
 
     if (row.selected) {
       checkboxSource = selectedCheckboxSource;
-      rowStyle = mergeStyles(styles.row, rowStyle, selectedRowStyle);
-      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle, selectedCheckboxStyle);
-      labelStyle = mergeStyles(styles.label, labelStyle, selectedLabelStyle);
+      rowStyle = [styles.row, rowStyle, selectedRowStyle];
+      checkboxStyle = [styles.checkbox, checkboxStyle, selectedCheckboxStyle];
+      imageStyle = [styles.image, imageStyle, selectedImageStyle];
     } else {
-      rowStyle = mergeStyles(styles.row, rowStyle);
-      checkboxStyle = mergeStyles(styles.checkbox, checkboxStyle);
-      labelStyle = mergeStyles(styles.label, labelStyle);
+      rowStyle = [styles.row, rowStyle];
+      checkboxStyle = [styles.checkbox, checkboxStyle];
+      imageStyle = [styles.image, imageStyle];
     }
 
     return (
-      <TouchableWithoutFeedback onPress={() => this.onRowPress(row)}>
+      <TouchableWithoutFeedback
+        delayLongPress={1000}
+        onPress={() => this.onRowPress(row)}
+        onLongPress={() => this.onRowLongPress(row)}
+      >
         <View style={rowStyle}>
           <Image style={checkboxStyle} source={checkboxSource} />
-          {/* <Text style={labelStyle}>{row.label}</Text> */}
-          <Image style={labelStyle} source={row.label} />
+          <Image style={imageStyle} source={{ uri: row.image }} />
         </View>
       </TouchableWithoutFeedback>
     );

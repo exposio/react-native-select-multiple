@@ -1,22 +1,23 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
-  row: {
-    flex: 1,
+  container: {
     flexDirection: "row",
-    alignItems: "center",
-    padding: 15,
-    borderBottomWidth: 1,
-    borderBottomColor: "#cccccc",
-    backgroundColor: "#ffffff"
+    justifyContent: "flex-start",
+    flexWrap: "wrap"
+  },
+  row: {
+    flexDirection: "column",
+    alignSelf: "flex-start",
+    justifyContent: "center",
+    alignItems: "center"
   },
   checkbox: {
     width: 24,
     height: 24,
-    marginRight: 5
-  },
-  label: {
-    width: 150,
-    height: 150
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    zIndex: 1
   }
 });
