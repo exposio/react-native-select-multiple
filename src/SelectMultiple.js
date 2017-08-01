@@ -22,7 +22,7 @@ export default class SelectMultiple extends Component {
     selectedItems: PropTypes.arrayOf(itemType),
 
     onSelectionsChange: PropTypes.func.isRequired,
-    onLongPress: PropTypes.func.isRequired,
+    onPress: PropTypes.func.isRequired,
 
     horizontal: PropTypes.bool,
 
@@ -80,7 +80,7 @@ export default class SelectMultiple extends Component {
     return items;
   }
 
-  onRowPress(row) {
+  onRowLongPress(row) {
     row = Object.assign({}, row);
 
     let { selectedItems } = this.props;
@@ -98,8 +98,8 @@ export default class SelectMultiple extends Component {
     this.props.onSelectionsChange(selectedItems, row);
   }
 
-  onRowLongPress(row) {
-    this.props.onLongPress(row.image);
+  onRowPress(row) {
+    this.props.onPress(row.image);
   }
 
   toImageValueObject(obj) {

@@ -7,14 +7,17 @@ export default StyleSheet.create({
     flexWrap: "wrap"
   },
   row: {
+    width: 200,
+    height: 200,
+    flexShrink: 0,
     flexDirection: "column",
     alignSelf: "flex-start",
     justifyContent: "center",
     alignItems: "center"
   },
   checkbox: {
-    width: 24,
-    height: 24,
+    width: 20,
+    height: 20,
     position: "absolute",
     bottom: 0,
     right: 0,
