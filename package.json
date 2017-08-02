@@ -30,5 +30,8 @@
   },
   "standard": {
     "parser": "babel-eslint"
+  },
+  "dependencies": {
+    "prop-types": "^15.5.10"
   }
 }
