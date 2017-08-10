@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { View, ListView, Text, TouchableWithoutFeedback, Image, Dimensions } from "react-native";
-import PropTypes from 'prop-types';
+import PropTypes from "prop-types";
 import styles from "./SelectMultiple.styles";
 import checkbox from "../images/icon-checkbox.png";
 import checkboxChecked from "../images/icon-checkbox-checked.png";
@@ -81,37 +81,30 @@ export default class SelectMultiple extends Component {
     return items;
   }
 
-  onRowLongPress(row) {
+  onRowLongPress(row, index) {
     row = Object.assign({}, row);
 
     let { selectedItems } = this.props;
 
     selectedItems = (selectedItems || []).map(this.toImageValueObject);
 
-    const index = selectedItems.findIndex(selectedItem => selectedItem.value === row.value);
+    const selectedIndex = selectedItems.findIndex(selectedItem => selectedItem.value === row.value);
 
-    if (index > -1) {
+    if (selectedIndex > -1) {
       selectedItems = selectedItems.filter(selectedItem => selectedItem.value !== row.value);
     } else {
       selectedItems = selectedItems.concat(row);
     }
 
-    this.props.onSelectionsChange(selectedItems, row);
+    this.props.onSelectionsChange(selectedItems, row, index);
   }
 
-  onRowPress(row) {
-    this.props.onPress(row.image);
+  onRowPress(row, index) {
+    this.props.onPress(row.image, index);
   }
 
   toImageValueObject(obj) {
-    if (
-      Object.prototype.toString.call(obj) === "[object String]" ||
-      Object.prototype.toString.call(obj) === "[object Number]"
-    ) {
-      return { image: obj, value: obj };
-    } else {
-      return { image: obj.image, value: obj.value };
-    }
+    return { image: obj, value: obj };
   }
 
   render() {
@@ -130,17 +123,40 @@ export default class SelectMultiple extends Component {
     );
   }
 
-  renderItemRow = row => {
-    let { checkboxSource, rowStyle, imageStyle, checkboxStyle } = this.props;
-
-    const {
+  renderItemRow = (row, sectionID, rowID) => {
+    let index = parseInt(rowID);
+    let {
+      checkboxSource,
+      rowStyle,
+      imageStyle,
+      checkboxStyle,
       selectedCheckboxSource,
       selectedRowStyle,
       selectedCheckboxStyle,
-      selectedImageStyle
+      selectedImageStyle,
+      loadingSource,
+      loadingStyle,
+      processingMessageWrapperStyle,
+      processingMessageStyle
     } = this.props;
 
-    if (row.selected) {
+    loadingStyle = [styles.loading, loadingStyle];
+    processingMessageStyle = [styles.processingMessage, processingMessageStyle];
+
+    if (row.image.isProcessing) {
+      processingMessageWrapperStyle = [
+        styles.processingMessageWrapper,
+        styles.processingMessageWrapperProcessing,
+        processingMessageWrapperStyle
+      ];
+    } else {
+      processingMessageWrapperStyle = [
+        styles.processingMessageWrapper,
+        processingMessageWrapperStyle
+      ];
+    }
+
+    if (row.image.selected) {
       checkboxSource = selectedCheckboxSource;
       rowStyle = [styles.row, rowStyle, selectedRowStyle];
       checkboxStyle = [styles.checkbox, checkboxStyle, selectedCheckboxStyle];
@@ -154,12 +170,23 @@ export default class SelectMultiple extends Component {
     return (
       <TouchableWithoutFeedback
         delayLongPress={1000}
-        onPress={() => this.onRowPress(row)}
-        onLongPress={() => this.onRowLongPress(row)}
+        onPress={() => this.onRowPress(row, index)}
+        onLongPress={() => this.onRowLongPress(row, index)}
       >
         <View style={rowStyle}>
-          <Image style={checkboxStyle} source={checkboxSource} />
-          <Image style={imageStyle} source={{ uri: row.image }} />
+          <TouchableWithoutFeedback onPress={() => this.onRowLongPress(row, index)}>
+            <View style={styles.checkboxWrapper}>
+              <Image style={checkboxStyle} source={checkboxSource} />
+            </View>
+          </TouchableWithoutFeedback>
+          <Image style={imageStyle} source={{ uri: row.image.url }} />
+          {row.image.isProcessing &&
+            <View style={processingMessageWrapperStyle}>
+              <Image style={loadingStyle} source={loadingSource} />
+              <Text style={processingMessageStyle}>
+                Traitement HDR{"\n"}en cours...
+              </Text>
+            </View>}
         </View>
       </TouchableWithoutFeedback>
     );
