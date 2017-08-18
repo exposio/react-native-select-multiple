@@ -134,6 +134,7 @@ export default class SelectMultiple extends Component {
       selectedRowStyle,
       selectedCheckboxStyle,
       selectedImageStyle,
+      purchasedImageStyle,
       loadingSource,
       loadingStyle,
       processingMessageWrapperStyle,
@@ -165,6 +166,10 @@ export default class SelectMultiple extends Component {
       rowStyle = [styles.row, rowStyle];
       checkboxStyle = [styles.checkbox, checkboxStyle];
       imageStyle = [styles.image, imageStyle];
+    }
+
+    if (row.image.isPurchased) {
+      imageStyle = [styles.image, imageStyle, purchasedImageStyle];
     }
 
     return (
