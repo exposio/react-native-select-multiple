@@ -179,11 +179,12 @@ export default class SelectMultiple extends Component {
         onLongPress={() => this.onRowLongPress(row, index)}
       >
         <View style={rowStyle}>
+          {row.image.isProcessing === false &&
           <TouchableWithoutFeedback onPress={() => this.onRowLongPress(row, index)}>
             <View style={styles.checkboxWrapper}>
               <Image style={checkboxStyle} source={checkboxSource} />
             </View>
-          </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>}
           <Image style={imageStyle} source={{ uri: row.image.url }} />
           {row.image.isProcessing &&
             <View style={processingMessageWrapperStyle}>
