@@ -37,7 +37,10 @@ export default class SelectMultiple extends Component {
 
     selectedRowStyle: styleType,
     selectedCheckboxStyle: styleType,
-    selectedImageStyle: styleType
+    selectedImageStyle: styleType,
+
+    processingMessage: PropTypes.string.isRequired,
+    savingMessage: PropTypes.string.isRequired
   };
 
   static defaultProps = {
@@ -144,7 +147,7 @@ export default class SelectMultiple extends Component {
     loadingStyle = [styles.loading, loadingStyle];
     processingMessageStyle = [styles.processingMessage, processingMessageStyle];
 
-    if (row.image.isProcessing) {
+    if (row.image.isProcessing || row.image.isSaving) {
       processingMessageWrapperStyle = [
         styles.processingMessageWrapper,
         styles.processingMessageWrapperProcessing,
@@ -190,7 +193,14 @@ export default class SelectMultiple extends Component {
             <View style={processingMessageWrapperStyle}>
               <Image style={loadingStyle} source={loadingSource} />
               <Text style={processingMessageStyle}>
-                Traitement HDR{"\n"}en cours...
+                {this.props.processingMessage}
+              </Text>
+            </View>}
+          {row.image.isSaving &&
+            <View style={processingMessageWrapperStyle}>
+              <Image style={loadingStyle} source={loadingSource} />
+              <Text style={processingMessageStyle}>
+              {this.props.savingMessage}
               </Text>
             </View>}
         </View>
