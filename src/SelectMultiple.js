@@ -87,6 +87,8 @@ export default class SelectMultiple extends Component {
   onRowLongPress(row, index) {
     row = Object.assign({}, row);
 
+    if (row.image.isProcessing) return false;
+
     let { selectedItems } = this.props;
 
     selectedItems = (selectedItems || []).map(this.toImageValueObject);
@@ -175,6 +177,8 @@ export default class SelectMultiple extends Component {
       imageStyle = [styles.image, imageStyle, purchasedImageStyle];
     }
 
+    console.log("isSaving: " + row.image.isSaving);
+
     return (
       <TouchableWithoutFeedback
         delayLongPress={1000}
@@ -182,27 +186,26 @@ export default class SelectMultiple extends Component {
         onLongPress={() => this.onRowLongPress(row, index)}
       >
         <View style={rowStyle}>
-          {row.image.isProcessing === false &&
-          <TouchableWithoutFeedback onPress={() => this.onRowLongPress(row, index)}>
-            <View style={styles.checkboxWrapper}>
-              <Image style={checkboxStyle} source={checkboxSource} />
-            </View>
-          </TouchableWithoutFeedback>}
+          {row.image.isProcessing === false && (
+            <TouchableWithoutFeedback onPress={() => this.onRowLongPress(row, index)}>
+              <View style={styles.checkboxWrapper}>
+                <Image style={checkboxStyle} source={checkboxSource} />
+              </View>
+            </TouchableWithoutFeedback>
+          )}
           <Image style={imageStyle} source={{ uri: row.image.url }} />
-          {row.image.isProcessing &&
+          {row.image.isProcessing && (
             <View style={processingMessageWrapperStyle}>
               <Image style={loadingStyle} source={loadingSource} />
-              <Text style={processingMessageStyle}>
-                {this.props.processingMessage}
-              </Text>
-            </View>}
-          {row.image.isSaving &&
+              <Text style={processingMessageStyle}>{this.props.processingMessage}</Text>
+            </View>
+          )}
+          {row.image.isSaving && (
             <View style={processingMessageWrapperStyle}>
               <Image style={loadingStyle} source={loadingSource} />
-              <Text style={processingMessageStyle}>
-              {this.props.savingMessage}
-              </Text>
-            </View>}
+              <Text style={processingMessageStyle}>{this.props.savingMessage}</Text>
+            </View>
+          )}
         </View>
       </TouchableWithoutFeedback>
     );
