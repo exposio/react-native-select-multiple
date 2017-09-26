@@ -177,8 +177,6 @@ export default class SelectMultiple extends Component {
       imageStyle = [styles.image, imageStyle, purchasedImageStyle];
     }
 
-    console.log("isSaving: " + row.image.isSaving);
-
     return (
       <TouchableWithoutFeedback
         delayLongPress={1000}
