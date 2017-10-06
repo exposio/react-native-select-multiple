@@ -2,8 +2,6 @@ import React, { Component } from "react";
 import { View, ListView, Text, TouchableWithoutFeedback, Image, Dimensions } from "react-native";
 import PropTypes from "prop-types";
 import styles from "./SelectMultiple.styles";
-import checkbox from "../images/icon-checkbox.png";
-import checkboxChecked from "../images/icon-checkbox-checked.png";
 
 const { width } = Dimensions.get("window");
 
@@ -27,16 +25,14 @@ export default class SelectMultiple extends Component {
 
     horizontal: PropTypes.bool,
 
-    checkboxSource: sourceType,
-    selectedCheckboxSource: sourceType,
+    checkbox: sourceType,
+    checkboxSelected: sourceType,
 
     style: styleType,
     rowStyle: styleType,
-    checkboxStyle: styleType,
     imageStyle: styleType,
 
     selectedRowStyle: styleType,
-    selectedCheckboxStyle: styleType,
     selectedImageStyle: styleType,
 
     processingMessage: PropTypes.string.isRequired,
@@ -47,12 +43,10 @@ export default class SelectMultiple extends Component {
     selectedItems: [],
     style: {},
     rowStyle: {},
-    checkboxStyle: {},
-    checkboxCheckedStyle: {},
     imageStyle: {},
     horizontal: false,
-    checkboxSource: checkbox,
-    selectedCheckboxSource: checkboxChecked
+    checkbox: <View />,
+    checkboxSelected: <View />
   };
 
   constructor(props) {
@@ -86,8 +80,6 @@ export default class SelectMultiple extends Component {
 
   onRowLongPress(row, index) {
     row = Object.assign({}, row);
-
-    if (row.image.isProcessing) return false;
 
     let { selectedItems } = this.props;
 
@@ -131,13 +123,11 @@ export default class SelectMultiple extends Component {
   renderItemRow = (row, sectionID, rowID) => {
     let index = parseInt(rowID);
     let {
-      checkboxSource,
+      checkbox,
       rowStyle,
       imageStyle,
-      checkboxStyle,
-      selectedCheckboxSource,
+      checkboxSelected,
       selectedRowStyle,
-      selectedCheckboxStyle,
       selectedImageStyle,
       purchasedImageStyle,
       loadingSource,
@@ -163,13 +153,10 @@ export default class SelectMultiple extends Component {
     }
 
     if (row.image.selected) {
-      checkboxSource = selectedCheckboxSource;
       rowStyle = [styles.row, rowStyle, selectedRowStyle];
-      checkboxStyle = [styles.checkbox, checkboxStyle, selectedCheckboxStyle];
       imageStyle = [styles.image, imageStyle, selectedImageStyle];
     } else {
       rowStyle = [styles.row, rowStyle];
-      checkboxStyle = [styles.checkbox, checkboxStyle];
       imageStyle = [styles.image, imageStyle];
     }
 
@@ -187,7 +174,7 @@ export default class SelectMultiple extends Component {
           {row.image.isProcessing === false && (
             <TouchableWithoutFeedback onPress={() => this.onRowLongPress(row, index)}>
               <View style={styles.checkboxWrapper}>
-                <Image style={checkboxStyle} source={checkboxSource} />
+                {row.image.selected ? checkboxSelected : checkbox}
               </View>
             </TouchableWithoutFeedback>
           )}
